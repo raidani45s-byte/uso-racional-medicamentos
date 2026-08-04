@@ -3,108 +3,663 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uso Racional de Medicamentos</title>
+  <title>Suite de Prompts IA para Monetización en YouTube</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- React 18 & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  
+  <!-- Babel Standalone Compiler -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Google Fonts: Inter & Outfit -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      background-color: #f4f6f9;
-      color: #333;
+      font-family: 'Inter', sans-serif;
     }
-    header {
-      background-color: #0d47a1;
-      color: white;
-      padding: 20px;
-      text-align: center;
+    .font-outfit {
+      font-family: 'Outfit', sans-serif;
     }
-    nav {
-      background: #1565c0;
-      padding: 10px;
-      text-align: center;
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
     }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-      font-weight: bold;
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #090d16;
     }
-    section {
-      padding: 30px;
-      max-width: 900px;
-      margin: auto;
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #dc2626;
+      border-radius: 3px;
     }
-    .card {
-      background: white;
-      padding: 20px;
-      margin-bottom: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #ef4444;
     }
-    footer {
-      background: #0d47a1;
-      color: white;
-      text-align: center;
-      padding: 15px;
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.4; }
+      50% { opacity: 0.8; }
     }
-    .cta {
-      background: #ff5252;
-      color: white;
-      padding: 15px;
-      text-align: center;
-      border-radius: 8px;
-      margin-top: 20px;
+    .animate-glow {
+      animation: pulseGlow 3s infinite ease-in-out;
     }
   </style>
 </head>
-<body>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col antialiased">
+  <div id="root"></div>
 
-<header>
-  <h1>Uso Racional de Medicamentos</h1>
-  <p>Información clara para cuidar tu salud</p>
-</header>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
 
-<nav>
-  <a href="#que-es">¿Qué es?</a>
-  <a href="#importancia">Importancia</a>
-  <a href="#recomendaciones">Recomendaciones</a>
-</nav>
+    // BANCO DE DATOS DE PROMPTS Y NICHOS PARA YOUTUBE AI
+    const NICHOS_YOUTUBE = [
+      { id: 'finanzas', nombre: 'Finanzas & Inversiones 💰', rpmPromedio: 12.50, desc: 'Canales Faceless sobre criptos, bolsa, ahorro y finanzas personales.' },
+      { id: 'tecnologia', nombre: 'Tecnología e Inteligencia Artificial 🤖', rpmPromedio: 8.50, desc: 'Reviews de software, herramientas IA, gadgets y automatización.' },
+      { id: 'historias', nombre: 'Historias Misteriosas & Casos Reales 🕵️‍♂️', rpmPromedio: 4.80, desc: 'Storytelling inmersivo, crímenes reales y leyendas urbanas.' },
+      { id: 'desarrollo', nombre: 'Desarrollo Personal & Estoicismo 🧠', rpmPromedio: 5.20, desc: 'Filosofía aplicada, productividad y hábitos de alto rendimiento.' },
+      { id: 'salud', nombre: 'Salud, Nutrición & Biología 🌿', rpmPromedio: 6.00, desc: 'Consejos de longevidad, dietas, anatomía explicada y bienestar.' },
+      { id: 'curiosidades', nombre: 'Tops 10 & Curiosidades del Mundo 🌍', rpmPromedio: 3.50, desc: 'Contenido altamente viral, listas de datos asombrosos e historia.' }
+    ];
 
-<section id="que-es">
-  <div class="card">
-    <h2>¿Qué es el uso racional de medicamentos?</h2>
-    <p>Es cuando los pacientes reciben los medicamentos adecuados, en la dosis correcta, durante el tiempo necesario y al menor costo posible.</p>
-  </div>
-</section>
+    const PROMPTS_MASTER = [
+      {
+        id: 1,
+        categoria: "Guiones Virales",
+        titulo: "Generador de Ganchos Psicólogos de 0 a 5 Segundos",
+        herramienta: "ChatGPT / Claude",
+        proposito: "Retener al espectador en los primeros 5 segundos del video para disparar la tasa de retención de YouTube.",
+        promptText: "Actúa como un guionista de YouTube experto en psicología de la atención. Crea 5 ganchos alternativos de menos de 15 palabras para un video sobre [TEMA]. El gancho debe generar un 'abismo de curiosidad' usando una pregunta contraintuitiva o una afirmación impactante que obligue al usuario a ver los primeros 30 segundos.",
+        hojaExcel: "01_Ganchos_Retencion_Alta"
+      },
+      {
+        id: 2,
+        categoria: "Miniaturas & Prompts Visuales",
+        titulo: "Prompt para Miniaturas Hiperrealistas de Alto CTR",
+        herramienta: "Midjourney / DALL-E 3",
+        proposito: "Generar imágenes limpias con alto contraste emocional para la miniatura de YouTube.",
+        promptText: "A YouTube thumbnail image depicting [PERSONAJE/OBJETO CENTRAL], hyper-realistic detail, dramatic cinematic lighting, expressive facial expression, vibrant contrasting colors (red and bright yellow accents), clean composition with space on the left side, 8k resolution, photorealistic style --ar 16:9 --v 6.0",
+        hojaExcel: "02_Midjourney_Miniaturas_CTR"
+      },
+      {
+        id: 3,
+        categoria: "Estrategia & Nicho",
+        titulo: "Estructura Completa de Guión Faceless (10 Minutos)",
+        herramienta: "ChatGPT / Claude 3",
+        proposito: "Escribir la escaleta completa marcando las pausas para efectos B-Roll e imágenes de apoyo.",
+        promptText: "Escribe un guión completo de 1,500 palabras para un video automatizado sin rostro sobre [TEMA]. Incluye: 1) Gancho de 5 seg. 2) Introducción de problema. 3) 4 Puntos clave con metáforas sencillas. 4) Marcadores [VOZ EN OFF], [IMAGEN B-ROLL] y [EFECTO DE SONIDO] para el editor de video. 5) Llamado a la acción sutil para suscribirse.",
+        hojaExcel: "03_Guiones_Faceless_10Min"
+      },
+      {
+        id: 4,
+        categoria: "SEO & Algoritmo",
+        titulo: "Optimizador de Títulos, Descripción y Metadata SEO",
+        herramienta: "ChatGPT / Gemini",
+        proposito: "Posicionar el video en búsquedas de YouTube y recomendaciones del algoritmo.",
+        promptText: "Dame 10 títulos altamente cliqueables (menos de 60 caracteres) para un video sobre [TEMA]. Mezcla emoción, intriga y keywords principales. Además, redacta una descripción optimizada para SEO de 200 palabras que incluya marcas de tiempo (timestamps) y 3 hashtags relevantes.",
+        hojaExcel: "04_SEO_Titulos_CTR"
+      },
+      {
+        id: 5,
+        categoria: "Monetización & Afiliados",
+        titulo: "Script Integrado de Venta de Productos / Afiliados",
+        herramienta: "ChatGPT / Claude",
+        proposito: "Integrar una recomendación patrocinada o enlace de afiliado sin perder la retención.",
+        promptText: "Redacta una mención patrocinada o de producto de afiliado de 45 segundos para integrar en el minuto 4 de un video sobre [TEMA]. El pitch debe conectar orgánicamente con el problema que el video está resolviendo y dar un llamado a la acción claro hacia el link de la descripción.",
+        hojaExcel: "05_Pitch_Afiliados_Monetizacion"
+      },
+      {
+        id: 6,
+        categoria: "YouTube Shorts / Reels",
+        titulo: "Generador de 5 Shorts Virales a partir de un Tema",
+        herramienta: "ChatGPT / Claude",
+        proposito: "Extraer conceptos de formato corto para alimentar el canal diariamente.",
+        promptText: "Genera 5 guiones para YouTube Shorts de 30 a 45 segundos sobre [TEMA]. Cada guión debe constar de: Gancho visual (1-3s), Frase controversial (4-15s), Conclusión reveladora (16-28s) y bucle perfecto (loop) donde la última palabra se conecte con la primera palabra del video.",
+        hojaExcel: "06_Shorts_Viral_Loops"
+      }
+    ];
 
-<section id="importancia">
-  <div class="card">
-    <h2>¿Por qué es importante?</h2>
-    <ul>
-      <li>Evita efectos secundarios innecesarios</li>
-      <li>Reduce la resistencia a los antibióticos</li>
-      <li>Protege tu salud y tu bolsillo</li>
-    </ul>
-  </div>
-</section>
+    function App() {
+      const [activeTab, setActiveTab] = useState('inicio');
+      const [showModal, setShowModal] = useState(false);
+      const [modalData, setModalData] = useState({ title: '', body: '', link: '' });
 
-<section id="recomendaciones">
-  <div class="card">
-    <h2>Recomendaciones prácticas</h2>
-    <ul>
-      <li>No te automediques</li>
-      <li>Sigue siempre la indicación médica</li>
-      <li>No suspendas el tratamiento antes de tiempo</li>
-    </ul>
+      // ESTADOS DEL GENERADOR DE PROMPTS
+      const [selectedNiche, setSelectedNiche] = useState('finanzas');
+      const [customTopic, setCustomTopic] = useState('Cómo ahorrar $5,000 en 6 meses usando inteligencia artificial');
+      const [selectedCategory, setSelectedCategory] = useState('Guiones Virales');
+      const [promptGenerated, setPromptGenerated] = useState('');
+      const [copiedStatus, setCopiedStatus] = useState(false);
 
-    <div class="cta">
-      <p>💊 Consulta siempre a tu farmacéutico o médico</p>
-    </div>
-  </div>
-</section>
+      // ESTADOS DE LA CALCULADORA DE INGRESOS (RPM)
+      const [vistasMensuales, setVistasMensuales] = useState(150000);
+      const [nichoCalculadora, setNichoCalculadora] = useState('finanzas');
+      const [porcentajeAfiliados, setPorcentajeAfiliados] = useState(1.5); // % de audiencia que compra algo
 
-<footer>
-  <p>Educación en salud | Farmacia responsable</p>
-</footer>
+      // ESTADOS DE BÚSQUEDA DEL MAPEO
+      const [searchQuery, setSearchQuery] = useState('');
 
+      const triggerModal = (title, body, link = '') => {
+        setModalData({ title, body, link });
+        setShowModal(true);
+      };
+
+      // CÁLCULO DE PROMPT EN VIVO
+      useEffect(() => {
+        const item = PROMPTS_MASTER.find(p => p.categoria === selectedCategory) || PROMPTS_MASTER[0];
+        let pText = item.promptText.replace(/\[TEMA\]/g, `"${customTopic || 'Tu Tema Aquí'}"`);
+        setPromptGenerated(pText);
+      }, [selectedCategory, customTopic]);
+
+      const handleCopyPrompt = () => {
+        navigator.clipboard.writeText(promptGenerated);
+        setCopiedStatus(true);
+        setTimeout(() => setCopiedStatus(false), 2500);
+      };
+
+      // CÁLCULOS DE MONETIZACIÓN YOUTUBE
+      const nichoObj = NICHOS_YOUTUBE.find(n => n.id === nichoCalculadora) || NICHOS_YOUTUBE[0];
+      const ingresosAdsense = (vistasMensuales / 1000) * nichoObj.rpmPromedio;
+      // Estimación de ingresos por afiliados/sponsor (promedio $15 por cada 1,000 vistas dedicadas)
+      const ingresosSponsors = (vistasMensuales / 1000) * (nichoObj.rpmPromedio * 0.8);
+      const ingresosTotalesEstimados = ingresosAdsense + ingresosSponsors;
+
+      // FILTRADO DE PROMPTS
+      const promptsFiltrados = PROMPTS_MASTER.filter(p => 
+        p.titulo.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.categoria.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.herramienta.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+
+      return (
+        <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
+          
+          {}
+          <header className="bg-slate-950 border-b border-red-600/30 py-5 px-6 sticky top-0 z-40 shadow-2xl backdrop-blur-md">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+              <div className="flex items-center gap-4">
+                <div className="bg-gradient-to-br from-red-600 to-rose-800 text-white p-3 rounded-2xl font-outfit text-2xl font-black shadow-lg shadow-red-600/20">
+                  ▶️
+                </div>
+                <div>
+                  <h1 className="text-xl md:text-3xl font-extrabold text-white tracking-tight font-outfit flex items-center gap-3">
+                    Suite de Prompts IA <span className="text-[10px] font-sans bg-red-600/20 text-red-400 border border-red-500/40 px-3 py-0.5 rounded-full font-bold uppercase tracking-widest">YouTube Monetización</span>
+                  </h1>
+                  <p className="text-xs text-slate-400 font-sans mt-0.5">Generador de Guiones Virales, Prompts para Miniaturas CTR y Calculadora RPM</p>
+                </div>
+              </div>
+
+              {/* Botón de Venta Principal */}
+              <div className="shrink-0">
+                <button 
+                  onClick={() => triggerModal(
+                    "Adquirir Pack Master Prompts & Plantillas de YouTube AI",
+                    "Obtén acceso inmediato al paquete original 'Pack_Master_Prompts_YouTube.xlsx'. Incluye más de 500 prompts probados para ChatGPT, Claude y Midjourney, estructuras de guiones faceless de alta retención, calendario de publicaciones automatizado en Excel y la calculadora de nichos con mayor RPM del mercado. Descárgalo de inmediato por solo $14.99 USD.",
+                    "https://payhip.com"
+                  )}
+                  className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs md:text-sm px-6 py-3.5 rounded-xl transition-all shadow-xl shadow-red-600/20 hover:scale-105 flex items-center gap-2 border border-red-400/30"
+                >
+                  📥 Descargar Pack_Master_Prompts_YouTube.xlsx ($14.99 USD)
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {}
+          <div className="bg-slate-900/90 border-b border-slate-800 py-3 sticky top-[85px] z-30 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-4 flex flex-wrap gap-2 justify-center md:justify-start">
+              {[
+                { id: 'inicio', label: 'Inicio & Estrategia 📑' },
+                { id: 'generador', label: 'Generador de Prompts 🤖' },
+                { id: 'rpm', label: 'Calculadora de Ingresos RPM 💰' },
+                { id: 'guiones', label: 'Estructura Guión Viral ⚡' },
+                { id: 'directorio', label: 'Directorio del Pack (500+) 📂' }
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-4 py-2 rounded-xl text-xs md:text-sm font-semibold transition-all ${
+                    activeTab === tab.id
+                      ? 'bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold shadow-lg shadow-red-600/20'
+                      : 'bg-slate-950 text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-slate-800'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {}
+          <main className="flex-grow max-w-7xl w-full mx-auto p-4 md:p-6">
+            
+            {/* TAB 1: INICIO & PRESENTACIÓN */}
+            {activeTab === 'inicio' && (
+              <div className="space-y-8 animate-fadeIn">
+                <div className="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border border-slate-800 p-6 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden">
+                  <div className="absolute -top-20 -right-20 w-96 h-96 bg-red-600/10 rounded-full blur-3xl pointer-events-none animate-glow"></div>
+                  <div className="max-w-4xl space-y-5">
+                    <span className="text-[10px] bg-red-600/10 text-red-400 border border-red-500/30 px-3 py-1 rounded-full font-bold uppercase tracking-widest">
+                      YouTube Automation & AI Prompts
+                    </span>
+                    <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight font-outfit leading-tight">
+                      Crea canales automatizados de YouTube y escala tus ingresos sin mostrar tu rostro.
+                    </h2>
+                    <p className="text-slate-300 text-sm md:text-base leading-relaxed">
+                      El algoritmo de YouTube premia dos cosas: **Tasa de Clics (CTR)** y **Retención de Audiencia**. Con esta suite interactiva podrás generar prompts de Inteligencia Artificial para redactar guiones hiper-adictivos y crear miniaturas virales en segundos.
+                    </p>
+                    
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pt-6">
+                      <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 hover:border-red-500/30 transition-all">
+                        <div className="text-3xl mb-2">🎯</div>
+                        <h3 className="font-bold text-red-400 text-sm font-outfit">Ganchos Psicólogos (0-5s)</h3>
+                        <p className="text-xs text-slate-400 mt-1">Evita que la gente deslice o cierre tu video en los primeros segundos del reproductor.</p>
+                      </div>
+                      <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 hover:border-red-500/30 transition-all">
+                        <div className="text-3xl mb-2">🎨</div>
+                        <h3 className="font-bold text-red-400 text-sm font-outfit">Prompts Midjourney CTR</h3>
+                        <p className="text-xs text-slate-400 mt-1">Crea imágenes cinematográficas con alto impacto visual diseñadas para miniaturas.</p>
+                      </div>
+                      <div className="bg-slate-950/80 p-5 rounded-2xl border border-slate-800 hover:border-red-500/30 transition-all">
+                        <div className="text-3xl mb-2">📈</div>
+                        <h3 className="font-bold text-red-400 text-sm font-outfit">Calculadora de RPM</h3>
+                        <p className="text-xs text-slate-400 mt-1">Descubre cuáles nichos pagan más AdSense por cada 1,000 reproducciones.</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Banner de Monetización Directa */}
+                <div className="bg-gradient-to-r from-slate-900 to-slate-950 border-l-4 border-red-600 p-6 rounded-r-3xl flex flex-col lg:flex-row items-center justify-between gap-6 shadow-xl">
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-bold text-white font-outfit flex items-center gap-2">
+                      <span>📊</span> ¿Quieres la colección completa de 500+ Prompts en Excel?
+                    </h3>
+                    <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
+                      Llévate el archivo **`Pack_Master_Prompts_YouTube.xlsx`** con plantillas listas para copiar y pegar: secuencias de guiones para canales Faceless, calendario editorial automatizado, prompts de imágenes por nicho y guía de monetización con afiliados.
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => triggerModal("Descargar Pack Excel", "Obtén el archivo .xlsx original listo para editar en tu computadora por $14.99 USD para acelerar el crecimiento de tu canal.", "https://payhip.com")}
+                    className="shrink-0 w-full lg:w-auto bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-sm px-6 py-4 rounded-xl transition-all shadow-lg hover:scale-105"
+                  >
+                    Consigue el Pack Completo ($14.99 USD)
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {}
+            {activeTab === 'generador' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
+                
+                {/* Panel de Entradas */}
+                <div className="lg:col-span-5 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h3 className="text-lg font-bold text-red-400 font-outfit flex items-center gap-2">
+                      <span>🤖</span> Generador Dinámico de Prompts
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Configura el tema de tu video y genera un prompt optimizado al instante.</p>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">1. Selecciona la Categoría del Prompt</label>
+                      <select 
+                        value={selectedCategory}
+                        onChange={(e) => setSelectedCategory(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 text-xs font-bold focus:outline-none focus:border-red-500"
+                      >
+                        {PROMPTS_MASTER.map(p => (
+                          <option key={p.id} value={p.categoria}>{p.categoria} — {p.titulo}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">2. Escribe el Tema o Título de tu Video</label>
+                      <input 
+                        type="text"
+                        value={customTopic}
+                        onChange={(e) => setCustomTopic(e.target.value)}
+                        placeholder="Ej: 5 Hábitos estoicos para multiplicar tus ingresos..."
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-white text-xs font-medium focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+
+                    <div className="p-4 bg-slate-950 rounded-2xl border border-slate-850 space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-slate-400 font-bold">Herramienta Recomendada:</span>
+                        <span className="bg-red-600/20 text-red-400 border border-red-500/30 px-2.5 py-0.5 rounded-full font-bold">{PROMPTS_MASTER.find(p => p.categoria === selectedCategory)?.herramienta}</span>
+                      </div>
+                      <p className="text-[11px] text-slate-400 leading-relaxed mt-1">
+                        {PROMPTS_MASTER.find(p => p.categoria === selectedCategory)?.proposito}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Output del Prompt Generado */}
+                <div className="lg:col-span-7 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                  <div>
+                    <div className="border-b border-slate-800 pb-3 flex justify-between items-center">
+                      <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Prompt Listo para Copiar e Ingresar en la IA</h4>
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase">Optimizado</span>
+                    </div>
+
+                    <div className="my-4 p-5 bg-slate-950 rounded-2xl border border-slate-800 font-mono text-xs text-red-200 leading-relaxed min-h-[180px] whitespace-pre-wrap select-all">
+                      {promptGenerated}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-2">
+                    <button 
+                      onClick={handleCopyPrompt}
+                      className={`w-full py-3.5 rounded-xl font-bold text-xs transition-all flex items-center justify-center gap-2 ${
+                        copiedStatus 
+                          ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20' 
+                          : 'bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/20'
+                      }`}
+                    >
+                      {copiedStatus ? '✅ ¡Prompt Copiado al Portapapeles!' : '📋 Copiar Prompt Seleccionado'}
+                    </button>
+
+                    <p className="text-[11px] text-slate-500 text-center italic">
+                      Pega este texto en ChatGPT, Claude o Midjourney para obtener resultados de nivel profesional instantáneamente.
+                    </p>
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {}
+            {activeTab === 'rpm' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
+                
+                {/* Entradas de la calculadora RPM */}
+                <div className="lg:col-span-6 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-6">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h3 className="text-lg font-bold text-red-400 font-outfit flex items-center gap-2">
+                      <span>💰</span> Calculadora de Potencial de Ingresos (RPM)
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Estima cuánto dinero puede generar un canal según sus reproducciones y temática.</p>
+                  </div>
+
+                  <div className="space-y-5">
+                    <div>
+                      <div className="flex justify-between items-center mb-2">
+                        <label className="text-xs font-bold text-slate-300 uppercase tracking-wider">Vistas Mensuales Estimadas</label>
+                        <span className="text-sm font-bold text-red-400 font-mono">{vistasMensuales.toLocaleString()} Vistas</span>
+                      </div>
+                      <input 
+                        type="range"
+                        min={10000}
+                        max={1000000}
+                        step={10000}
+                        value={vistasMensuales}
+                        onChange={(e) => setVistasMensuales(Number(e.target.value))}
+                        className="w-full accent-red-600 cursor-pointer h-2 bg-slate-950 rounded-lg appearance-none"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Selecciona el Nicho del Canal</label>
+                      <select 
+                        value={nichoCalculadora}
+                        onChange={(e) => setNichoCalculadora(e.target.value)}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-200 text-xs font-bold focus:outline-none focus:border-red-500"
+                      >
+                        {NICHOS_YOUTUBE.map(n => (
+                          <option key={n.id} value={n.id}>{n.nombre} — RPM ~$ {n.rpmPromedio.toFixed(2)} USD</option>
+                        ))}
+                      </select>
+                      <p className="text-[11px] text-slate-400 mt-2 italic">{nichoObj.desc}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Dashboard de Ingresos Calculados */}
+                <div className="lg:col-span-6 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                  <div className="border-b border-slate-800 pb-3 flex justify-between items-center">
+                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Estimación Mensual de Ingresos</h4>
+                    <span className="bg-amber-500/10 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase">Proyección AdSense + Sponsors</span>
+                  </div>
+
+                  <div className="space-y-4 my-4">
+                    <div className="p-4 bg-slate-950 rounded-2xl border border-slate-850 flex justify-between items-center">
+                      <div>
+                        <span className="text-xs text-slate-400 font-bold block">ADSENSE ESTIMADO (RPM):</span>
+                        <span className="text-[10px] text-slate-500">Basado en $ {nichoObj.rpmPromedio} USD por 1k vistas</span>
+                      </div>
+                      <span className="text-2xl font-black text-emerald-400 font-mono">$ {ingresosAdsense.toFixed(2)} USD</span>
+                    </div>
+
+                    <div className="p-4 bg-slate-950 rounded-2xl border border-slate-850 flex justify-between items-center">
+                      <div>
+                        <span className="text-xs text-slate-400 font-bold block">SPONSORS / AFILIADOS ESTIMADO:</span>
+                        <span className="text-[10px] text-slate-500">Ventas indirectas y enlaces en descripción</span>
+                      </div>
+                      <span className="text-2xl font-black text-sky-400 font-mono">$ {ingresosSponsors.toFixed(2)} USD</span>
+                    </div>
+
+                    <div className="p-4 bg-gradient-to-r from-red-950/40 to-slate-950 rounded-2xl border border-red-500/30 flex justify-between items-center">
+                      <div>
+                        <span className="text-xs text-red-300 font-extrabold block">INGRESO TOTAL POTENCIAL / MES:</span>
+                        <span className="text-[10px] text-red-400/80">Sumatoria AdSense + Marcas</span>
+                      </div>
+                      <span className="text-3xl font-black text-amber-400 font-mono">$ {ingresosTotalesEstimados.toFixed(2)} USD</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-850 text-xs text-slate-400">
+                    💡 <strong>Tip de Crecimiento:</strong> Los nichos B2B y Finanzas requieren menos visitas para generar altos ingresos gracias a un RPM elevado.
+                  </div>
+                </div>
+
+              </div>
+            )}
+
+            {}
+            {activeTab === 'guiones' && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-fadeIn">
+                
+                <div className="lg:col-span-7 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl space-y-5">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h3 className="text-lg font-bold text-red-400 font-outfit flex items-center gap-2">
+                      <span>⚡</span> Estructura Maestra de un Guión Viral (10 Min)
+                    </h3>
+                    <p className="text-xs text-slate-400 mt-1">Los 4 bloques de retención usados por los canales con millones de suscriptores.</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-xs text-red-400">1. EL GANCHO ULTRARÁPIDO (Segundos 0 - 5)</span>
+                        <span className="text-[10px] bg-red-600/20 text-red-400 px-2 py-0.5 rounded-full font-bold">Crítico</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        Muestra el resultado final o la pregunta más inquietante. No saludes ni digas "bienvenidos a mi canal".
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-xs text-amber-400">2. LAPROMESA Y ABISMO DE CURIOSIDAD (Segundos 6 - 30)</span>
+                        <span className="text-[10px] bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full font-bold">Retención</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        Explica exactamente qué aprenderán y advierte que el punto #3 es el más importante para que no abandonen el video.
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-xs text-sky-400">3. DESARROLLO CON B-ROLL E IMÁGENES (Minutos 1 - 8)</span>
+                        <span className="text-[10px] bg-sky-500/20 text-sky-400 px-2 py-0.5 rounded-full font-bold">Contenido</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        Cambia el estímulo visual cada 3-5 segundos usando efectos de sonido, imágenes de apoyo o animaciones.
+                      </p>
+                    </div>
+
+                    <div className="bg-slate-950 p-4 rounded-2xl border border-slate-800 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-xs text-emerald-400">4. LLAMADO A LA ACCIÓN & Siguiente Video (Minutos 9 - 10)</span>
+                        <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold">Cierre</span>
+                      </div>
+                      <p className="text-xs text-slate-300 leading-relaxed">
+                        No digas "gracias por ver". Di: "Si quieres saber cómo aplicar el siguiente paso, haz clic en este video que aparece en pantalla".
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="lg:col-span-5 bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
+                  <div className="border-b border-slate-800 pb-3">
+                    <h4 className="text-xs font-bold text-slate-300 uppercase tracking-widest">Acelera tu Producción con Excel</h4>
+                  </div>
+
+                  <div className="space-y-4 my-4">
+                    <div className="p-4 rounded-2xl bg-red-600/10 border border-red-500/30 flex gap-3 text-red-400">
+                      <span className="text-2xl">🚀</span>
+                      <div className="space-y-1">
+                        <h4 className="font-bold text-xs uppercase">Plantillas de Automatización</h4>
+                        <p className="text-[11px] text-red-300 leading-relaxed">
+                          El **`Pack_Master_Prompts_YouTube.xlsx`** incluye las hojas para organizar la producción de 30 guiones al mes sin saturarte.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button 
+                    onClick={() => triggerModal("Descargar Pack Excel", "Consigue el paquete completo .xlsx con plantillas de guiones y prompts probados por $14.99 USD.", "https://payhip.com")}
+                    className="w-full bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold py-3.5 rounded-xl transition-all text-xs shadow-lg shadow-red-600/20"
+                  >
+                    Obtener el Pack de Prompts ($14.99 USD)
+                  </button>
+                </div>
+
+              </div>
+            )}
+
+            {}
+            {activeTab === 'directorio' && (
+              <div className="space-y-6 animate-fadeIn">
+                <div className="bg-slate-900 p-6 rounded-3xl border border-slate-800 shadow-2xl">
+                  
+                  <div className="flex flex-col md:flex-row items-center justify-between gap-4 border-b border-slate-800 pb-4 mb-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-red-400 font-outfit flex items-center gap-2">
+                        <span>📂</span> Directorio Mapeado del Pack Excel
+                      </h3>
+                      <p className="text-xs text-slate-400 mt-1">
+                        Explora la estructura de los 500+ prompts incluidos en el paquete descargable original.
+                      </p>
+                    </div>
+
+                    <div className="relative w-full md:w-80">
+                      <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-500">🔍</span>
+                      <input 
+                        type="text"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        placeholder="Buscar por categoría o herramienta..."
+                        className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-red-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="overflow-x-auto rounded-2xl border border-slate-850">
+                    <table className="w-full text-left border-collapse text-xs md:text-sm">
+                      <thead>
+                        <tr className="bg-slate-950 text-slate-300 border-b border-slate-800">
+                          <th className="p-3 font-bold uppercase tracking-wider text-[11px] text-red-400">Categoría</th>
+                          <th className="p-3 font-bold uppercase tracking-wider text-[11px] text-red-400">Título del Prompt</th>
+                          <th className="p-3 font-bold uppercase tracking-wider text-[11px] text-red-400">Herramienta IA</th>
+                          <th className="p-3 font-bold uppercase tracking-wider text-[11px] text-red-400">Hoja Asociada en Excel</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-950 text-slate-300">
+                        {promptsFiltrados.length > 0 ? (
+                          promptsFiltrados.map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-950/40 transition-colors">
+                              <td className="p-3 whitespace-nowrap">
+                                <span className="bg-red-600/10 text-red-400 border border-red-500/20 px-2.5 py-0.5 rounded-full text-[10px] font-bold">
+                                  {item.categoria}
+                                </span>
+                              </td>
+                              <td className="p-3 font-bold text-white whitespace-nowrap">{item.titulo}</td>
+                              <td className="p-3 text-slate-400">{item.herramienta}</td>
+                              <td className="p-3 text-amber-400 font-mono text-[11px] whitespace-nowrap">
+                                📊 {item.hojaExcel}
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={4} className="p-8 text-center text-slate-500">
+                              No se encontraron elementos que coincidan con la búsqueda.
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  </div>
+
+                </div>
+              </div>
+            )}
+
+          </main>
+
+          {}
+          <footer className="bg-slate-950 border-t border-slate-900 py-6 px-4 text-center text-xs text-slate-500">
+            <div className="max-w-7xl mx-auto space-y-2">
+              <p>© {new Date().getFullYear()} Suite de Prompts IA para Monetización en YouTube. Todos los derechos reservados.</p>
+              <p className="text-[10px] text-slate-600">Herramienta de optimización de contenido independiente para creadores digitales.</p>
+            </div>
+          </footer>
+
+          {/* MODAL DE VENTA / DESCARGA */}
+          {showModal && (
+            <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn">
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-red-600/10 rounded-full blur-2xl pointer-events-none"></div>
+                <div className="flex items-center gap-3">
+                  <span className="text-3xl">📥</span>
+                  <h3 className="text-lg font-bold text-white font-outfit">{modalData.title}</h3>
+                </div>
+                <p className="text-xs text-slate-300 leading-relaxed">{modalData.body}</p>
+                <div className="flex justify-end gap-3 pt-2">
+                  <button 
+                    onClick={() => setShowModal(false)}
+                    className="bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition-all"
+                  >
+                    Cerrar
+                  </button>
+                  {modalData.link && (
+                    <a 
+                      href={modalData.link}
+                      target="_blank"
+                      className="bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all shadow-lg shadow-red-600/20"
+                    >
+                      Descargar Pack en Payhip
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
 </body>
 </html>
