@@ -1,1 +1,1 @@
-# uso-racional-medicamentos
+# suite-prompts-monetizacionyoutube
