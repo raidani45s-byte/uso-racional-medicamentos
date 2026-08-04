@@ -1,1 +1,1 @@
-# suite-prompts-monetizacionyoutube
+# youtube-prompts-suite.
